@@ -1,0 +1,35 @@
+
+
+*******************************************************************************
+Wed Mar 18 23:38:25 2020
+
+
+FIT:    data read from file.".dat" using 1:2:3
+        format = x:z:s
+        #datapoints = 17
+function used for fitting: f(x)
+	f(x) = Io*exp(a*x)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   Io            a            
+   0 1.5215626092e+11   0.00e+00  1.07e+06    1.000000e+00   1.000000e+00
+  23 7.5312285336e+00  -5.05e-02  1.07e-03    3.129548e+00   3.321116e-01
+
+After 23 iterations the fit converged.
+final sum of squares of residuals : 7.53123
+rel. change during last iteration : -5.04507e-07
+
+degrees of freedom    (FIT_NDF)                        : 15
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.708577
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.502082
+p-value of the Chisq distribution (FIT_P)              : 0.9412
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+Io              = 3.12955          +/- 0.2304       (7.362%)
+a               = 0.332112         +/- 0.005319     (1.602%)
+
+correlation matrix of the fit parameters:
+                Io     a      
+Io              1.000 
+a              -0.979  1.000 
