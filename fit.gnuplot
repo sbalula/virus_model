@@ -3,7 +3,7 @@
 #run: gnuplot fit.gnuplot
 #or copy past into gnuplot interactive
 
-file = 'pt_20200318' #.dat
+file = 'pt_20200319' #.dat
 f(x) = Io*exp(a*x) #can be any function
 
 set fit logfile file.'.log' #Output file
@@ -11,11 +11,11 @@ fit f(x) file.".dat" using 1:2:3 via Io, a    #x, y, ey
 
 set xrange [*: *]
 set yrange [* : *]
-set xlabel "X axis (unit)"
-set ylabel "Y axis (unit)"
+set xlabel "time since 1st case (days)"
+set ylabel "Count (-)"
 
 plot \
-f(x) lt rgb "black" title 'f(x)=m*x+b',\
+f(x) lt rgb "black" title 'f(x)=Io*exp(a*x)',\
 file.".dat" notitle with yerrorbars lt rgb "black"
 
 set terminal postscript eps color lw 1 "Helvetica" 20

@@ -3,12 +3,13 @@ from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
 import pandas as pd
 import datetime as datetime
+from scipy.integrate import ode
 
-a = 0.332   #Exponential rate from least squares fit
+a = 0.320   #Exponential rate from least squares fit
 R0 = 2.28   #Estimated R0 from cruise ship
 
 Re = R0     #Effective transmission rate
-I0 = 3.13   #Initial number of cases from least squares fit
+I0 = 3.58   #Initial number of cases from least squares fit
 N = 10e6    #Population pt
 steps = 250 #Euler integration steps per day
 noaction = 3650  #Large number, action never happens 
@@ -22,21 +23,36 @@ The I state is assumed to be the time where active transmission is active, and i
 
 '''
 
-def dX(X, b, c):
+def dX(t, X, b, c):
     """Returns the derivative of the SIR system of equations"""
-    
     #b rate of new infections
     #c half time of infectious state
     S,I,R = X
     dS = - b * S * I 
     dI = b * S * I - c * I
     dR = c * I
-
-    return np.array([dS, dI, dR])
+    return [dS, dI, dR]
 
 
 
 def simul(action,R1,R0=R0,b=b,incub=incub,N=N,I0=I0,NDAYS=180, dX=dX):
+    """Simulate SIR Model"""
+    X = np.zeros((NDAYS,3))       #SRI vector
+    X[0] = [(N-I0)/N, I0/N, 0]  #Inital state
+    f = ode(dX)
+    f.set_initial_value(X[0])
+    f.set_integrator("dopri5")
+    for i in range(1,len(X)):
+        if i < action+incub:
+            Re = R0
+        else:
+            Re = R1
+        c = b/Re
+        f.set_f_params(b,c)
+        X[i] = f.integrate(i)
+    return(N*X)
+
+def simul_euler(action,R1,R0=R0,b=b,incub=incub,N=N,I0=I0,NDAYS=180, dX=dX):
     """Simulate SIR Model"""
     X = np.zeros((NDAYS,3))       #SRI vector
     X[0] = [(N-I0)/N, I0/N, 0]  #Inital state
@@ -45,19 +61,17 @@ def simul(action,R1,R0=R0,b=b,incub=incub,N=N,I0=I0,NDAYS=180, dX=dX):
             Re = R0
         else:
             Re = R1
-
         c = b/Re
-
         X[i] = X[i-1]
         for j in range(steps):
-            X[i] = X[i] + dX(X[i], b, c)/steps
+            X[i] = X[i] + np.array(dX(0, X[i], b, c))/steps
     return(N*X)
 
 def quickplot(X, H):
     date_list = [base + datetime.timedelta(days=x) for x in range(len(X))]
-    p = plt.plot_date(date_list, X[:,0], label='S_'+str(H), linestyle='--', marker='')
-    plt.plot_date(date_list, X[:,1], label='I_'+str(H), linestyle='-', color = p[0].get_color(), marker='')
-    plt.plot_date(date_list, X[:,2], label='R_'+str(H), linestyle=':', color = p[0].get_color(), marker='')
+    p = plt.plot_date(date_list, X[:,0], label='S_'+H, linestyle='--', marker='')
+    plt.plot_date(date_list, X[:,1], label='I_'+H, linestyle='-', color = p[0].get_color(), marker='')
+    plt.plot_date(date_list, X[:,2], label='R_'+H, linestyle=':', color = p[0].get_color(), marker='')
 
 #Plot experimental data
 filename = "pt_20200318.dat"
@@ -72,13 +86,18 @@ plt.ion()
 plt.show()
 
 #Scenario 0: No action taken
-H = 0
+H = "0_RK4"
 X = simul(noaction, Re)
+quickplot(X, H)
+
+
+H = "0_euler"
+X = simul_euler(noaction, Re)
 quickplot(X, H)
 
 #Scenario 1: Action now, 1/3 the reproduction rate
 #How to estimate effect of measures??
-H = 1
+H = "1"
 X = simul(16, Re/3)
 quickplot(X, H)
 
