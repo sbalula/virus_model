@@ -74,7 +74,7 @@ def quickplot(X, H):
     plt.plot_date(date_list, X[:,2], label='R_'+H, linestyle=':', color = p[0].get_color(), marker='')
 
 #Plot experimental data
-filename = "pt_20200318.dat"
+filename = "pt_20200319.dat"
 base = datetime.date(2020,3,2)
 
 data = pd.read_table(filename)
