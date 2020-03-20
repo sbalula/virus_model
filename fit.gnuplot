@@ -3,7 +3,7 @@
 #run: gnuplot fit.gnuplot
 #or copy past into gnuplot interactive
 
-file = 'pt_20200319' #.dat
+file = 'pt_20200320' #.dat
 f(x) = Io*exp(a*x) #can be any function
 
 set fit logfile file.'.log' #Output file
